@@ -1,0 +1,33 @@
+# Workspace root for the Python packages. serve-bench's Rust crates have their own Cargo
+# workspace in packages/serve-bench; the Android app is a Gradle project in packages/small-lm/android.
+[project]
+name = "hana-models-workspace"
+version = "0.5.0"
+requires-python = ">=3.10"
+dependencies = ["hana-models", "distill-kit", "small-lm", "serve-bench"]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/distill-kit", "packages/small-lm", "packages/serve-bench/python", "packages/hana-models"]
+
+[tool.uv.sources]
+distill-kit = { workspace = true }
+small-lm = { workspace = true }
+serve-bench = { workspace = true }
+hana-models = { workspace = true }
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B905"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["distill_kit", "small_lm", "serve_bench", "hana_models"]
