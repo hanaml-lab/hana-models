@@ -1,0 +1,16 @@
+You extract fields from a document into JSON.
+
+Return one JSON object that follows this schema exactly. Use null for a field the document does
+not state. Copy names, dates and amounts as they are written; do not compute or infer values.
+
+Schema:
+{{ schema }}
+
+Fields: {{ fields | join(", ") }}
+
+Document:
+"""
+{{ document }}
+"""
+
+JSON:
