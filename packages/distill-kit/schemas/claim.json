@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "required": ["policy_number", "claimant", "incident_date", "amount_claimed"],
+  "properties": {
+    "policy_number": {"type": "string"},
+    "claimant": {"type": "string"},
+    "incident_date": {"type": "string"},
+    "incident_type": {"type": ["string", "null"], "enum": ["collision", "theft", "fire", "water", "other", null]},
+    "amount_claimed": {"type": ["number", "null"]},
+    "currency": {"type": ["string", "null"]},
+    "police_report": {"type": ["boolean", "null"]}
+  },
+  "additionalProperties": false
+}
