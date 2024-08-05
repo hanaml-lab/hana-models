@@ -1,0 +1,18 @@
+[package]
+name = "serve-bench"
+description = "Replay recorded LLM traffic against a server and measure latency, throughput and cost"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "serve-bench"
+path = "src/main.rs"
+
+[dependencies]
+serve-bench-metrics = { path = "../metrics" }
+serde.workspace = true
+serde_json.workspace = true
+ureq = { version = "2", features = ["json"] }
+ruzstd = "0.7"
