@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "serve-bench"
+version = "0.7.3"
+description = "Accuracy, cost and report steps for serve-bench."
+license = "Apache-2.0"
+authors = [{ name = "hanaML", email = "hello@hanaml.com" }]
+requires-python = ">=3.10"
+dependencies = ["pyyaml>=6"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["serve_bench"]
