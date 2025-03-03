@@ -1,0 +1,10 @@
+{"id": "num-001", "kind": "number", "prompt": "An invoice lists 3 items at 412.50 each and a delivery charge of 35. What is the total? Reply with the number only.", "answer": "1272.5"}
+{"id": "num-002", "kind": "number", "prompt": "Revenue was 4.2 billion in 2024 and 3.9 billion in 2023. What was the growth in percent, to one decimal place? Reply with the number only.", "answer": "7.7"}
+{"id": "num-003", "kind": "number", "prompt": "A clause caps liability at fees paid in the prior twelve months. Monthly fees were 1,850. What is the cap? Reply with the number only.", "answer": "22200"}
+{"id": "num-004", "kind": "number", "prompt": "Net debt was 310 million at the end of June and 285 million at the end of December. By how many million did it fall? Reply with the number only.", "answer": "25"}
+{"id": "ext-001", "kind": "contains", "prompt": "Extract the termination notice period from: 'Either party may terminate this agreement on ninety (90) days' written notice.'", "answer": "90 days"}
+{"id": "ext-002", "kind": "contains", "prompt": "Who is the claimant in: 'Claim MTR-48812 was filed by Aisha Raman on 14 March 2026 after a collision on Mill Lane.'", "answer": "Aisha Raman"}
+{"id": "ext-003", "kind": "contains", "prompt": "Which city is named as the delivery address in: 'Deliver to 5 Canal Wharf, Leeds, by Friday.'", "answer": "Leeds"}
+{"id": "cls-001", "kind": "exact", "prompt": "Is this clause an indemnity, a termination or a payment clause? 'The Supplier shall hold the Customer harmless against all third-party claims.' Answer with one word.", "answer": "indemnity"}
+{"id": "cls-002", "kind": "exact", "prompt": "Is this clause an indemnity, a termination or a payment clause? 'Invoices are payable within thirty days of receipt.' Answer with one word.", "answer": "payment"}
+{"id": "cls-003", "kind": "exact", "prompt": "Answer yes or no: does 'unless agreed otherwise in writing' make the preceding obligation conditional?", "answer": "yes"}
