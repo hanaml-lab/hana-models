@@ -1,0 +1,7 @@
+server: sglang
+model: meta-llama/Llama-3.1-70B-Instruct
+quantization: none
+dtype: bfloat16
+prefix_caching: true      # RadixAttention
+tensor_parallel: 8
+slo: { ttft_p95_ms: 800 }

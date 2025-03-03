@@ -1,0 +1,7 @@
+server: vllm
+model: meta-llama/Llama-3.1-70B-Instruct
+quantization: fp8
+speculative: { method: eagle, tokens: 4 }
+prefix_caching: true
+tensor_parallel: 8
+slo: { ttft_p95_ms: 800 }
