@@ -1,0 +1,6 @@
+model: google/gemma-3-1b-it
+quant: Q4_0
+n_ctx: 4096
+router:
+  coverage: 0.7
+  on_low_confidence: abstain   # no network on the target devices

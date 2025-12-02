@@ -1,0 +1,6 @@
+model: Qwen/Qwen3-1.7B
+quant: Q4_K_M
+n_ctx: 8192
+router:
+  coverage: 0.8
+  on_low_confidence: escalate   # or: abstain
