@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 (2025-12-08)
+
+- distill-kit: DPO pairs and CLI
+- small-lm: quantisation check, notes index, calibrated router
+
 ## 0.2.0 (2025-03-05)
 
 - serve-bench: trace replay, latency histograms, cost and accuracy reports
