@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hana-models"
+version = "0.5.0"
+description = "The model factory pipeline: distill-kit, small-lm and serve-bench wired together."
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{ name = "hanaML", email = "hello@hanaml.com" }]
+requires-python = ">=3.10"
+dependencies = ["distill-kit", "small-lm", "serve-bench", "numpy>=1.26"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["hana_models"]
