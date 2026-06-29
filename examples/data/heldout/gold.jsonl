@@ -1,0 +1,8 @@
+{"id": "claim-041", "target": {"policy_number": "MTR-94097", "claimant": "Aisha Mensah", "incident_date": "2026-01-23", "incident_type": "theft", "amount_claimed": 3175.5, "currency": "GBP", "police_report": false}}
+{"id": "claim-042", "target": {"policy_number": "MTR-51994", "claimant": "Grace Martin", "incident_date": "2026-06-09", "incident_type": "collision", "amount_claimed": 640.0, "currency": "GBP", "police_report": false}}
+{"id": "claim-043", "target": {"policy_number": "MTR-82129", "claimant": "Nadia Chen", "incident_date": "2026-03-14", "incident_type": "water", "amount_claimed": 850.0, "currency": "GBP", "police_report": true}}
+{"id": "claim-044", "target": {"policy_number": "MTR-32661", "claimant": "Sofia Haddad", "incident_date": "2026-03-18", "incident_type": "theft", "amount_claimed": 7250.0, "currency": "GBP", "police_report": true}}
+{"id": "claim-045", "target": {"policy_number": "MTR-98851", "claimant": "Lucas Raman", "incident_date": "2026-04-23", "incident_type": "water", "amount_claimed": 1240.0, "currency": "GBP", "police_report": false}}
+{"id": "claim-046", "target": {"policy_number": "MTR-48033", "claimant": "Ravi Chen", "incident_date": "2026-06-27", "incident_type": "other", "amount_claimed": 2350.0, "currency": "GBP", "police_report": false}}
+{"id": "claim-047", "target": {"policy_number": "MTR-97988", "claimant": "Grace Chen", "incident_date": "2026-05-13", "incident_type": "theft", "amount_claimed": 4980.0, "currency": "GBP", "police_report": false}}
+{"id": "claim-048", "target": {"policy_number": "MTR-85102", "claimant": "Sofia Mensah", "incident_date": "2026-02-16", "incident_type": "water", "amount_claimed": 1240.0, "currency": "GBP", "police_report": false}}
