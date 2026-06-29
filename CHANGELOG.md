@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0 (2026-06-29)
+
+- small-lm: Android app and llama.cpp bridge
+- offline stand-ins for the factory
+
 ## 0.3.0 (2025-12-08)
 
 - distill-kit: DPO pairs and CLI
