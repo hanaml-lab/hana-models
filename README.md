@@ -42,3 +42,38 @@ How the pieces connect:
   on each serving configuration so a cheaper setting that loses accuracy shows both.
 - `serve-bench report` reads the Rust replay's `summary.json` and `requests.jsonl` and the Python accuracy step's
   `accuracy.json` from the same run folder.
+
+## Quickstart
+
+```bash
+git clone https://github.com/hanaml-lab/hana-models && cd hana-models
+uv sync
+make example        # builds serve-bench, then runs examples/end_to_end.py
+```
+
+The example runs the whole factory offline on 41 sample insurance claim forms: recorded teacher samples are
+filtered and deduplicated, a rule-based stand-in student's mistakes become DPO pairs, the small-lm router is
+calibrated on where that student is right, and serve-bench replays the sample RAG trace against two simulated
+servers. The stand-ins are there so the plumbing runs on a laptop; the numbers it prints describe the example only.
+For real runs, each package README shows the commands with real models and GPUs.
+
+## Development
+
+```bash
+make test            # Rust tests, each Python package, and the integration test
+make test-android    # the Kotlin router's unit tests (needs an Android SDK)
+make lint
+```
+
+## Related
+
+- Research: [domain post-training](https://hanaml.com/research/domain-post-training),
+  [small language models](https://hanaml.com/research/small-language-models),
+  [inference efficiency](https://hanaml.com/research/inference-efficiency).
+- Paper: [Distilling a frontier model into an 8B domain specialist](https://hanaml.com/research/papers/distilling-domain-agents).
+- Models built here: [clause-extract-8b](https://hanaml.com/models/clause-extract-8b),
+  [ondevice-summarise-1b](https://hanaml.com/models/ondevice-summarise-1b).
+
+## Licence
+
+Apache-2.0. See `LICENSE`. Trained models inherit the licences of their base models.
