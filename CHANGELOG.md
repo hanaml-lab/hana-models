@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0 (2026-10-08)
+
+- hana-models pipeline and end-to-end example
+- integration test across the three packages
+
 ## 0.4.0 (2026-06-29)
 
 - small-lm: Android app and llama.cpp bridge
