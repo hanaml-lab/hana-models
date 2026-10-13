@@ -1,4 +1,4 @@
-"""distill-kit teach | filter | dedup | predict | pairs | eval"""
+"""distill-kit clean | teach | filter | dedup | predict | pairs | eval"""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import json
 import sys
 from pathlib import Path
 
+from distill_kit.data.clean import clean_folder
 from distill_kit.data.dedup import dedup
 from distill_kit.data.filter import filter_traces, read_jsonl, write_jsonl
 from distill_kit.eval import evaluate
@@ -36,6 +37,9 @@ def predict(model_dir: str, rows: list[dict], schema: dict, max_tokens: int = 10
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="distill-kit")
     sub = ap.add_subparsers(dest="cmd", required=True)
+    c = sub.add_parser("clean", help="redact personal data and apply the quality rules before teaching")
+    c.add_argument("--docs", required=True)
+    c.add_argument("--out", required=True)
     t = sub.add_parser("teach")
     t.add_argument("--docs", required=True)
     t.add_argument("--schema", required=True)
@@ -68,7 +72,9 @@ def main(argv: list[str] | None = None) -> int:
     e.add_argument("--general", default="mt-bench")
     args = ap.parse_args(argv)
 
-    if args.cmd == "teach":
+    if args.cmd == "clean":
+        print(json.dumps(clean_folder(args.docs, args.out).__dict__), file=sys.stderr)
+    elif args.cmd == "teach":
         schema = json.loads(Path(args.schema).read_text())
         write_jsonl(args.out, teach(args.docs, schema, load_teacher(args.teacher), args.samples))
     elif args.cmd == "filter":

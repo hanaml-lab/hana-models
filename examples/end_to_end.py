@@ -2,8 +2,9 @@
 
     make build-rust && uv run python examples/end_to_end.py
 
-1. distil   distill-kit turns recorded teacher samples into a filtered, deduplicated training
-            set, and the student's own mistakes into DPO pairs;
+1. distil   distill-kit cleans the documents (personal data redacted, quality rules), turns
+            recorded teacher samples into a filtered, deduplicated training set, and the student's
+            own mistakes into DPO pairs;
 2. route    small-lm calibrates a router on where the student is right, and picks the share of
             questions it can keep on the device;
 3. bench    serve-bench replays the sample RAG trace against two simulated serving profiles and
@@ -28,6 +29,9 @@ DATA = ROOT / "examples/data"
 def main() -> None:
     schema = json.loads((ROOT / "packages/distill-kit/schemas/claim.json").read_text())
     d = distil(DATA / "claims", DATA / "heldout", schema, DATA / "teacher-samples.jsonl")
+    c = d.cleaned
+    print(f"clean:  {c.kept} of {c.documents} documents pass the quality rules; "
+          f"{sum(c.redacted.values())} personal-data spans redacted")
     print(f"distil: {d.documents} documents -> {d.kept_after_filter} after filtering "
           f"({d.invalid_teacher_samples} teacher samples failed the schema) -> {d.kept_after_dedup} after dedup")
     print(f"        {len(d.pairs)} DPO pairs from the student's mistakes; student held-out F1 {d.student_f1_heldout}")

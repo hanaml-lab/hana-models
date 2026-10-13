@@ -5,11 +5,13 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 
+from distill_kit.data.clean import CleanStats, clean_folder
 from distill_kit.data.dedup import dedup
 from distill_kit.data.filter import filter_traces
 from distill_kit.eval import f1
@@ -23,6 +25,7 @@ from small_lm.local import Generation, features
 
 @dataclass
 class DistillResult:
+    cleaned: CleanStats
     documents: int
     kept_after_filter: int
     kept_after_dedup: int
@@ -33,7 +36,9 @@ class DistillResult:
 
 
 def distil(claims: Path, heldout: Path, schema: dict, teacher_samples: Path) -> DistillResult:
-    traces = teach(claims, schema, replay_teacher(teacher_samples), samples=3)
+    with tempfile.TemporaryDirectory() as tmp:
+        cleaned = clean_folder(claims, tmp)  # nothing reaches the teacher before it is cleaned
+        traces = teach(tmp, schema, replay_teacher(teacher_samples), samples=3)
     kept, stats = filter_traces(traces, schema, min_agree=2)
     keep = dedup([r["document"] for r in kept], threshold=0.8)
     train = [kept[i] for i in keep]
@@ -41,7 +46,7 @@ def distil(claims: Path, heldout: Path, schema: dict, teacher_samples: Path) -> 
     pairs = build_pairs(train, student, {r["id"]: render(r["document"], schema) for r in train})
     gold = [json.loads(x) for x in (heldout / "gold.jsonl").read_text().splitlines() if x.strip()]
     preds = [extract((heldout / f"{g['id']}.txt").read_text()).record for g in gold]
-    return DistillResult(len(traces), stats.kept, len(train), stats.invalid_samples, train, pairs,
+    return DistillResult(cleaned, len(traces), stats.kept, len(train), stats.invalid_samples, train, pairs,
                          round(f1(preds, [g["target"] for g in gold]), 4))
 
 

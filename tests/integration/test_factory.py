@@ -19,7 +19,9 @@ def distilled():
     return distil(DATA / "claims", DATA / "heldout", schema, DATA / "teacher-samples.jsonl")
 
 
-def test_distil_filters_dedups_and_pairs(distilled):
+def test_distil_cleans_filters_dedups_and_pairs(distilled):
+    # The sample claim forms hold no personal data the task does not need, and all pass the quality rules.
+    assert (distilled.cleaned.documents, distilled.cleaned.kept, distilled.cleaned.redacted) == (41, 41, {})
     assert distilled.documents == 41
     assert distilled.kept_after_filter < distilled.documents  # self-contradicting teacher output is dropped
     assert distilled.kept_after_dedup == distilled.kept_after_filter - 1  # the resubmitted claim
