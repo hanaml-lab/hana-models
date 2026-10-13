@@ -1,5 +1,8 @@
 """SFT and DPO with TRL, configured from a recipe YAML. Launched by scripts/train.sh.
 
+A recipe is a full fine-tune under DeepSpeed ZeRO-3 (``deepspeed:``) where memory allows, or a LoRA adapter
+(``lora:``) otherwise.
+
     accelerate launch --config_file recipes/accelerate.yaml -m distill_kit.train recipes/sft-qwen3-8b.yaml
 """
 
@@ -16,6 +19,7 @@ TRAINER_KEYS = {
     "warmup_ratio", "lr_scheduler_type", "weight_decay", "max_length", "bf16", "gradient_checkpointing",
     "logging_steps", "save_strategy", "seed", "beta", "max_prompt_length", "loss_type",
 }
+LORA_KEYS = {"r", "alpha", "dropout", "target_modules"}
 
 
 def load_recipe(path: str | Path) -> dict:
@@ -28,7 +32,24 @@ def load_recipe(path: str | Path) -> dict:
     unknown = set(recipe.get("trainer", {})) - TRAINER_KEYS
     if unknown:
         raise ValueError(f"unknown trainer settings: {', '.join(sorted(unknown))}")
+    if "lora" in recipe:
+        unknown = set(recipe["lora"]) - LORA_KEYS
+        if unknown:
+            raise ValueError(f"unknown lora settings: {', '.join(sorted(unknown))}")
+        if recipe.get("deepspeed"):
+            raise ValueError("a recipe trains with LoRA or ZeRO-3 (full fine-tune), not both")
     return recipe
+
+
+def peft_config(recipe: dict):
+    """The LoRA adapter of a recipe, or None for a full fine-tune."""
+    if "lora" not in recipe:
+        return None
+    from peft import LoraConfig
+
+    lora = recipe["lora"]
+    return LoraConfig(r=lora.get("r", 16), lora_alpha=lora.get("alpha", 32), lora_dropout=lora.get("dropout", 0.05),
+                      target_modules=lora.get("target_modules", "all-linear"), task_type="CAUSAL_LM")
 
 
 def to_chat(row: dict, template_prompt: str | None = None) -> dict:
@@ -56,11 +77,13 @@ def main(argv: list[str] | None = None) -> int:
 
             schema = json.loads(Path(recipe["schema"]).read_text())
             data = data.map(lambda r: to_chat(r, render(r["document"], schema)))
-        trainer = SFTTrainer(model=model, args=SFTConfig(**args), train_dataset=data, processing_class=tok)
+        trainer = SFTTrainer(model=model, args=SFTConfig(**args), train_dataset=data, processing_class=tok,
+                             peft_config=peft_config(recipe))
     else:
         from trl import DPOConfig, DPOTrainer
 
-        trainer = DPOTrainer(model=model, args=DPOConfig(**args), train_dataset=data, processing_class=tok)
+        trainer = DPOTrainer(model=model, args=DPOConfig(**args), train_dataset=data, processing_class=tok,
+                             peft_config=peft_config(recipe))
     trainer.train()
     trainer.save_model(recipe["output_dir"])
     tok.save_pretrained(recipe["output_dir"])

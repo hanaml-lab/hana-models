@@ -71,3 +71,17 @@ def test_template_and_recipes():
     assert "policy_number, claimant" in prompt and "Policy MTR-48812" in prompt
     assert load_recipe(ROOT / "recipes/sft-qwen3-8b.yaml")["stage"] == "sft"
     assert load_recipe(ROOT / "recipes/dpo-qwen3-8b.yaml")["trainer"]["beta"] == 0.1
+
+
+def test_lora_recipe_for_a_small_base_and_its_checks(tmp_path):
+    recipe = load_recipe(ROOT / "recipes/sft-llama3.2-3b-lora.yaml")
+    assert recipe["model"] == "meta-llama/Llama-3.2-3B-Instruct" and "deepspeed" not in recipe
+    assert recipe["lora"] == {"r": 16, "alpha": 32, "dropout": 0.05, "target_modules": "all-linear"}
+    bad = tmp_path / "bad.yaml"
+    bad.write_text("stage: sft\nmodel: m\ndata: d\noutput_dir: o\nlora: {r: 8, rank_dropout: 0.1}\n")
+    with pytest.raises(ValueError, match="unknown lora settings: rank_dropout"):
+        load_recipe(bad)
+    both = tmp_path / "both.yaml"
+    both.write_text("stage: sft\nmodel: m\ndata: d\noutput_dir: o\ndeepspeed: ds.json\nlora: {r: 8}\n")
+    with pytest.raises(ValueError, match="LoRA or ZeRO-3"):
+        load_recipe(both)

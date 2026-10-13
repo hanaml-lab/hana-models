@@ -1,0 +1,25 @@
+# LoRA on Llama 3.2 3B Instruct, for when a full fine-tune does not fit: one 24 GB GPU.
+# The model is gated on the Hugging Face Hub; accept its licence first. Built with Llama.
+stage: sft
+model: meta-llama/Llama-3.2-3B-Instruct
+data: train.jsonl
+schema: schemas/claim.json
+output_dir: runs/sft-llama3.2-3b-lora
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: all-linear
+trainer:
+  learning_rate: 2.0e-4
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  warmup_ratio: 0.03
+  lr_scheduler_type: cosine
+  max_length: 4096
+  bf16: true
+  gradient_checkpointing: true
+  logging_steps: 10
+  save_strategy: epoch
+  seed: 7
