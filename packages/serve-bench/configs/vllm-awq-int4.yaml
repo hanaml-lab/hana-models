@@ -1,0 +1,7 @@
+# 4-bit AWQ weights (activations stay BF16). Cheapest per token; check the accuracy delta on numeric fields.
+server: vllm
+model: hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4
+quantization: awq
+prefix_caching: true
+tensor_parallel: 4
+slo: { ttft_p95_ms: 800 }

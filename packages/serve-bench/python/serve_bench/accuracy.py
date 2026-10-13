@@ -38,6 +38,26 @@ def grade(output: str, answer: str, kind: str = "exact", tolerance: float = 1e-6
     return output.strip().casefold() == answer.strip().casefold()
 
 
+SERVERS = {"vllm", "sglang", "trtllm"}
+QUANTIZATIONS = {"none", "fp8", "awq"}
+
+
+def load_config(path: str | Path) -> dict:
+    """A serving configuration: the server (vLLM, SGLang or TensorRT-LLM), the model, its quantisation and the
+    latency target. The accuracy step needs the model; the whole configuration is stored beside the result."""
+    cfg = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    for key in ("server", "model", "quantization", "slo"):
+        if key not in cfg:
+            raise ValueError(f"{path}: missing {key}")
+    if cfg["server"] not in SERVERS:
+        raise ValueError(f"{path}: server is one of {sorted(SERVERS)}")
+    if cfg["quantization"] not in QUANTIZATIONS:
+        raise ValueError(f"{path}: quantization is one of {sorted(QUANTIZATIONS)}")
+    if "ttft_p95_ms" not in cfg["slo"]:
+        raise ValueError(f"{path}: slo needs ttft_p95_ms")
+    return cfg
+
+
 def load_suite(folder: str | Path) -> list[dict]:
     rows = []
     for path in sorted(Path(folder).glob("*.jsonl")):
@@ -78,7 +98,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--endpoint", default="http://localhost:8000/v1")
     ap.add_argument("--out", default=None)
     args = ap.parse_args(argv)
-    cfg = yaml.safe_load(Path(args.config).read_text())
+    cfg = load_config(args.config)
     out = Path(args.out or f"runs/{Path(args.config).stem}")
     out.mkdir(parents=True, exist_ok=True)
     result = {"config": cfg, **run(load_suite(args.suite), chat(args.endpoint, cfg["model"]))}

@@ -1,0 +1,8 @@
+# TensorRT-LLM through its OpenAI-compatible server (trtllm-serve), FP8 weights and KV cache.
+server: trtllm
+model: meta-llama/Llama-3.1-70B-Instruct
+quantization: fp8
+kv_cache_dtype: fp8
+prefix_caching: true      # KV cache block reuse
+tensor_parallel: 8
+slo: { ttft_p95_ms: 800 }

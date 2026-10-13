@@ -1,0 +1,8 @@
+# The baseline: BF16 weights, no speculation, no prefix cache.
+server: vllm
+model: meta-llama/Llama-3.1-70B-Instruct
+quantization: none
+dtype: bfloat16
+prefix_caching: false
+tensor_parallel: 8
+slo: { ttft_p95_ms: 800 }

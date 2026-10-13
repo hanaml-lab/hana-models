@@ -1,8 +1,9 @@
 import json
+from pathlib import Path
 
 import pytest
 
-from serve_bench.accuracy import grade, run
+from serve_bench.accuracy import grade, load_config, run
 from serve_bench.cost import cost_per_million, tokens_within_slo
 from serve_bench.report import row, table
 
@@ -43,3 +44,27 @@ def test_report(tmp_path):
     assert rows[1]["cost_per_1m_output_tokens"] < rows[0]["cost_per_1m_output_tokens"]
     out = table(rows)
     assert "-0.4" in out and out.count("\n") == 3
+
+
+CONFIGS = Path(__file__).resolve().parents[2] / "configs"
+
+
+def test_every_shipped_config_names_a_server_a_model_and_a_latency_target():
+    names = {p.stem for p in CONFIGS.glob("*.yaml")}
+    assert names == {"vllm-bf16", "vllm-fp8-eagle", "vllm-awq-int4", "sglang-bf16", "trtllm-fp8"}
+    for name in names:
+        cfg = load_config(CONFIGS / f"{name}.yaml")
+        assert cfg["server"] == name.split("-")[0] and cfg["slo"]["ttft_p95_ms"] == 800
+
+
+def test_a_config_the_harness_cannot_launch_is_rejected(tmp_path):
+    bad = tmp_path / "bad.yaml"
+    bad.write_text("server: tgi\nmodel: m\nquantization: none\nslo: {ttft_p95_ms: 800}\n")
+    with pytest.raises(ValueError, match="server"):
+        load_config(bad)
+    bad.write_text("server: vllm\nmodel: m\nquantization: int3\nslo: {ttft_p95_ms: 800}\n")
+    with pytest.raises(ValueError, match="quantization"):
+        load_config(bad)
+    bad.write_text("server: vllm\nquantization: fp8\nslo: {ttft_p95_ms: 800}\n")
+    with pytest.raises(ValueError, match="model"):
+        load_config(bad)
