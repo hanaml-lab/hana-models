@@ -2,6 +2,7 @@
 serve-bench binary against simulated servers."""
 
 import json
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -27,6 +28,17 @@ def test_distil_cleans_filters_dedups_and_pairs(distilled):
     assert distilled.kept_after_dedup == distilled.kept_after_filter - 1  # the resubmitted claim
     assert distilled.pairs and all(json.loads(p["chosen"]) != json.loads(p["rejected"]) for p in distilled.pairs)
     assert 0.5 < distilled.student_f1_heldout < 1.0
+
+
+def test_plan_replays_what_the_student_solves_and_distils_its_mistakes(distilled):
+    p = distilled.plan
+    assert p.routed == "stand-in" and p.k == {"stand-in": 1}
+    assert 0.0 < p.coverage["stand-in"] < 1.0
+    signals = Counter(r.signal for r in p.routes)
+    assert sum(signals.values()) == distilled.kept_after_dedup
+    assert signals["verifier"] == 0  # a deterministic student solves a prompt always or never
+    assert signals["replay"] == distilled.kept_after_dedup - len(distilled.pairs)
+    assert signals["teacher"] + signals["drop"] == len(distilled.pairs)
 
 
 def test_router_keeps_what_the_student_gets_right(distilled):

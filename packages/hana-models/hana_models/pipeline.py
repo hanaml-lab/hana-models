@@ -14,8 +14,10 @@ import numpy as np
 from distill_kit.data.clean import CleanStats, clean_folder
 from distill_kit.data.dedup import dedup
 from distill_kit.data.filter import filter_traces
-from distill_kit.eval import f1
+from distill_kit.eval import f1, field_f1
 from distill_kit.pairs import build_pairs
+from distill_kit.plan import Plan, Student, plan
+from distill_kit.schema import parse
 from distill_kit.teacher import render, replay_teacher, teach
 from hana_models.simserver import PROFILES, serve
 from hana_models.student import extract
@@ -33,6 +35,7 @@ class DistillResult:
     train: list[dict]
     pairs: list[dict]
     student_f1_heldout: float
+    plan: Plan
 
 
 def distil(claims: Path, heldout: Path, schema: dict, teacher_samples: Path) -> DistillResult:
@@ -46,8 +49,22 @@ def distil(claims: Path, heldout: Path, schema: dict, teacher_samples: Path) -> 
     pairs = build_pairs(train, student, {r["id"]: render(r["document"], schema) for r in train})
     gold = [json.loads(x) for x in (heldout / "gold.jsonl").read_text().splitlines() if x.strip()]
     preds = [extract((heldout / f"{g['id']}.txt").read_text()).record for g in gold]
+    # GATE's plan, with the filtered teacher record as the verifier: a sample solves a document when every field
+    # matches it. A real run uses the task's own verifier against gold records.
+    samples = {r["id"]: r["samples"] for r in traces}
+    teacher = {r["id"]: [solves(parse(s, schema)[0], r["target"]) for s in samples[r["id"]]] for r in train}
+    stand_in = {r["id"]: [solves(student[r["id"]], r["target"])] for r in train}
     return DistillResult(cleaned, len(traces), stats.kept, len(train), stats.invalid_samples, train, pairs,
-                         round(f1(preds, [g["target"] for g in gold]), 4))
+                         round(f1(preds, [g["target"] for g in gold]), 4),
+                         plan(teacher, {"stand-in": Student(0.0, stand_in)}))
+
+
+def solves(record: dict | None, target: dict) -> bool:
+    """The verifier of the example: every field of the target, and no other, has the same value."""
+    if record is None:
+        return False
+    tp, npred, ngold = field_f1(record, target)
+    return tp == npred == ngold
 
 
 @dataclass

@@ -5,9 +5,10 @@
 1. distil   distill-kit cleans the documents (personal data redacted, quality rules), turns
             recorded teacher samples into a filtered, deduplicated training set, and the student's
             own mistakes into DPO pairs;
-2. route    small-lm calibrates a router on where the student is right, and picks the share of
+2. plan     GATE's coverage rule and per-prompt routing (distill_kit.plan) on the same documents;
+3. route    small-lm calibrates a router on where the student is right, and picks the share of
             questions it can keep on the device;
-3. bench    serve-bench replays the sample RAG trace against two simulated serving profiles and
+4. bench    serve-bench replays the sample RAG trace against two simulated serving profiles and
             reports latency, throughput and cost side by side.
 
 The teacher samples in examples/data are recorded fixtures, the student is a rule-based stand-in
@@ -35,6 +36,13 @@ def main() -> None:
     print(f"distil: {d.documents} documents -> {d.kept_after_filter} after filtering "
           f"({d.invalid_teacher_samples} teacher samples failed the schema) -> {d.kept_after_dedup} after dedup")
     print(f"        {len(d.pairs)} DPO pairs from the student's mistakes; student held-out F1 {d.student_f1_heldout}")
+
+    p = d.plan
+    shares = ", ".join(f"{v:.0%} {k}" for k, v in p.shares.items())
+    verdict = f"chosen: {p.student}" if p.student else "no candidate clears it"
+    print(f"plan:   coverage of the stand-in student rho_{p.k['stand-in']} = {p.coverage['stand-in']:.2f} "
+          f"(GATE needs >= 0.952; {verdict})")
+    print(f"        routes: {shares}")
 
     docs = [(r["document"], r["target"]) for r in d.train]
     r = route(docs * 4)
