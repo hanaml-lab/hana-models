@@ -1,4 +1,4 @@
-"""distill-kit clean | teach | filter | dedup | predict | pairs | eval"""
+"""distill-kit clean | teach | filter | dedup | predict | pairs | eval | plan"""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from distill_kit.data.dedup import dedup
 from distill_kit.data.filter import filter_traces, read_jsonl, write_jsonl
 from distill_kit.eval import evaluate
 from distill_kit.pairs import build_pairs
+from distill_kit.plan import Student, plan
 from distill_kit.schema import parse
 from distill_kit.teacher import load_teacher, render, teach
 
@@ -70,6 +71,10 @@ def main(argv: list[str] | None = None) -> int:
     e.add_argument("run")
     e.add_argument("--task", required=True)
     e.add_argument("--general", default="mt-bench")
+    pl = sub.add_parser("plan", help="GATE: pick the student size by coverage and route each prompt")
+    pl.add_argument("outcomes", help='JSONL: {"id", "model", "correct": [bool, ...]}, plus "params_b" for students')
+    pl.add_argument("--teacher", default="teacher", help="the model name of the teacher's rows")
+    pl.add_argument("--out", required=True, help="one route per prompt, as JSONL")
     args = ap.parse_args(argv)
 
     if args.cmd == "clean":
@@ -99,6 +104,18 @@ def main(argv: list[str] | None = None) -> int:
         pairs = build_pairs(rows, student, prompts)
         write_jsonl(args.out, pairs)
         print(json.dumps({"pairs": len(pairs), "of": len(rows)}), file=sys.stderr)
+    elif args.cmd == "plan":
+        rows = read_jsonl(args.outcomes)
+        teacher = {r["id"]: r["correct"] for r in rows if r["model"] == args.teacher}
+        students: dict[str, Student] = {}
+        for r in rows:
+            if r["model"] != args.teacher:
+                s = students.setdefault(r["model"], Student(float(r["params_b"]), {}))
+                s.outcomes[r["id"]] = r["correct"]
+        p = plan(teacher, students)
+        write_jsonl(args.out, [r.__dict__ for r in p.routes])
+        print(json.dumps({"student": p.student, "routed": p.routed, "k": p.k,
+                          "coverage": {n: round(c, 4) for n, c in p.coverage.items()}, "shares": p.shares}))
     else:
         print(json.dumps(evaluate(args.run, args.task, args.general), indent=2))
     return 0
