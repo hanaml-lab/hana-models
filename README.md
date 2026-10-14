@@ -141,7 +141,7 @@ of GATE's baselines.
 
 | Date | Paper | What this repo implements | PDF | Paper repo |
 | --- | --- | --- | --- | --- |
-| 2025-10-21 | [Distilling a frontier model into an 8B domain specialist](https://hanaml.com/research/papers/distilling-domain-agents) | `distill-kit`: teacher sampling, the field-agreement filter, MinHash dedup, SFT, DPO on the student's own errors, field-level F1 | [PDF](https://hanaml.com/papers/distilling-domain-agents.pdf) | [distilling-domain-agents](https://github.com/hanaml-lab/distilling-domain-agents) |
+| 2025-10-21 | [PACT: Distilling Tool-Using Domain Agents with Provenance-Checked Teacher Corrections](https://hanaml.com/research/papers/distilling-domain-agents) | `distill-kit`: teacher sampling, the field-agreement filter, MinHash dedup, SFT, DPO on the student's own errors, field-level F1 | [PDF](https://hanaml.com/papers/distilling-domain-agents.pdf) | [distilling-domain-agents](https://github.com/hanaml-lab/distilling-domain-agents) |
 | 2026-02-24 | [GATE: Gap-Adaptive Mixing of On-Policy Distillation and Verifiable Rewards for Small Domain Specialists](https://hanaml.com/research/papers/domain-distillation-rl) | `distill_kit.plan`: the coverage rule rho_k >= 0.952 for the student size, and the per-prompt weight lambda(x) and routing | [PDF](https://hanaml.com/papers/domain-distillation-rl.pdf) | [domain-distillation-rl](https://github.com/hanaml-lab/domain-distillation-rl) |
 
 ## Models
@@ -189,7 +189,7 @@ If you use the distillation pipeline or the GATE plan, cite the paper as well:
 ```bibtex
 @techreport{agarwal2025distilling,
   author      = {Agarwal, Manav},
-  title       = {Distilling a frontier model into an 8B domain specialist},
+  title       = {PACT: Distilling Tool-Using Domain Agents with Provenance-Checked Teacher Corrections},
   institution = {hanaML},
   type        = {Technical report},
   year        = {2025},

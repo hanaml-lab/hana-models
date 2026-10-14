@@ -19,7 +19,7 @@ keywords:
   - llm-serving
 references:
   - type: report
-    title: "Distilling a frontier model into an 8B domain specialist"
+    title: "PACT: Distilling Tool-Using Domain Agents with Provenance-Checked Teacher Corrections"
     authors:
       - family-names: Agarwal
         given-names: Manav
