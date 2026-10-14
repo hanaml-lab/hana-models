@@ -2,7 +2,7 @@
 # workspace in packages/serve-bench; the Android app is a Gradle project in packages/small-lm/android.
 [project]
 name = "hana-models-workspace"
-version = "0.5.0"
+version = "0.6.0"
 requires-python = ">=3.10"
 dependencies = ["hana-models", "distill-kit", "small-lm", "serve-bench"]
 

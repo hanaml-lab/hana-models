@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "distill-kit"
-version = "0.5.0"
+version = "0.6.0"
 description = "Data pipeline and training recipes for post-training a small open model on one domain task."
 readme = "README.md"
 license = "Apache-2.0"

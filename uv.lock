@@ -1372,7 +1372,7 @@ wheels = [
 
 [[package]]
 name = "distill-kit"
-version = "0.5.0"
+version = "0.6.0"
 source = { editable = "packages/distill-kit" }
 dependencies = [
     { name = "jinja2" },
@@ -2082,7 +2082,7 @@ wheels = [
 
 [[package]]
 name = "hana-models"
-version = "0.5.0"
+version = "0.6.0"
 source = { editable = "packages/hana-models" }
 dependencies = [
     { name = "distill-kit" },
@@ -2103,7 +2103,7 @@ requires-dist = [
 
 [[package]]
 name = "hana-models-workspace"
-version = "0.5.0"
+version = "0.6.0"
 source = { virtual = "." }
 dependencies = [
     { name = "distill-kit" },
@@ -7331,7 +7331,7 @@ wheels = [
 
 [[package]]
 name = "serve-bench"
-version = "0.7.3"
+version = "0.8.0"
 source = { editable = "packages/serve-bench/python" }
 dependencies = [
     { name = "pyyaml" },

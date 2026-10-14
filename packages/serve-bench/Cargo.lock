@@ -373,7 +373,7 @@ dependencies = [
 
 [[package]]
 name = "serve-bench"
-version = "0.7.3"
+version = "0.8.0"
 dependencies = [
  "ruzstd",
  "serde",
@@ -384,7 +384,7 @@ dependencies = [
 
 [[package]]
 name = "serve-bench-metrics"
-version = "0.7.3"
+version = "0.8.0"
 dependencies = [
  "serde",
 ]
