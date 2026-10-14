@@ -3,7 +3,7 @@
 A recipe is a full fine-tune under DeepSpeed ZeRO-3 (``deepspeed:``) where memory allows, or a LoRA adapter
 (``lora:``) otherwise.
 
-    accelerate launch --config_file recipes/accelerate.yaml -m distill_kit.train recipes/sft-qwen3-8b.yaml
+    accelerate launch --num_processes 8 --mixed_precision bf16 -m distill_kit.train recipes/sft-qwen3-8b.yaml
 """
 
 from __future__ import annotations

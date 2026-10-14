@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "hana-models: a factory for small domain models"
+abstract: "Post-train a small open model on one task, run it on the device with a calibrated router or behind a server, and measure what each serving choice costs in latency, money and accuracy."
+version: 0.6.0
+date-released: 2026-10-14
+license: Apache-2.0
+repository-code: "https://github.com/hanaml-lab/hana-models"
+url: "https://hanaml.com/research/model-factory"
+authors:
+  - name: hanaML
+keywords:
+  - distillation
+  - post-training
+  - dpo
+  - on-device
+  - quantization
+  - llm-serving
+references:
+  - type: report
+    title: "Distilling a frontier model into an 8B domain specialist"
+    authors:
+      - family-names: Agarwal
+        given-names: Manav
+    institution:
+      name: hanaML
+    year: 2025
+    url: "https://hanaml.com/research/papers/distilling-domain-agents"
+  - type: report
+    title: "GATE: Gap-Adaptive Mixing of On-Policy Distillation and Verifiable Rewards for Small Domain Specialists"
+    authors:
+      - family-names: Agarwal
+        given-names: Manav
+    institution:
+      name: hanaML
+    year: 2026
+    url: "https://hanaml.com/research/papers/domain-distillation-rl"

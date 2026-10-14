@@ -45,6 +45,11 @@ task format.
 
 ## Configuration
 
+Each run names a configuration in `configs/`: `vllm-bf16` (the baseline), `vllm-fp8-eagle`, `vllm-awq-int4`,
+`sglang-bf16` and `trtllm-fp8` (TensorRT-LLM through `trtllm-serve`). `load_config` checks that a configuration names
+a server it knows (`vllm`, `sglang`, `trtllm`), a model, a quantisation (`none`, `fp8`, `awq`) and a latency target;
+the accuracy step stores the whole configuration beside its result.
+
 ```yaml
 # configs/vllm-fp8-eagle.yaml
 server: vllm
