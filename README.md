@@ -113,24 +113,37 @@ replays the sample RAG trace against the two simulated servers; on an unloaded m
 and a prefix cache gives the lower p95 time to first token and the lower cost per million output tokens. The
 absolute figures depend on the machine, and on a heavily loaded one so can the order.
 
-### Reported for the project
+### Reported in the papers
 
-From the research project [A factory for small domain models](https://hanaml.com/research/model-factory):
+The project's two papers report these numbers; each row quotes its paper. PACT's provenance check, repair and gated
+corrections, and the GATE trainer, are in the paper repos; the Papers table below says which parts this repo
+carries.
 
-| Metric | Baseline | Ours | Note |
+| Metric | Baseline | Result | Setting | Paper |
+| --- | --- | --- | --- | --- |
+| ClaimsDesk field F1, held-out carriers | 0.72 | 0.86 | 1,800 claim files from four carriers not seen in training; prompted Qwen3-8B vs. PACT; teacher (Kimi-K2-Instruct) 0.89 | [PACT](https://hanaml.com/research/papers/distilling-domain-agents) |
+| τ²-bench average pass¹, Qwen3-8B | 21.2 | 52.1 | Prompted vs. PACT; RFT 43.7, teacher 63.1; official retail, airline and telecom splits | PACT |
+| Share of the prompted-to-teacher gap closed, τ²-bench | 54% | 74% | RFT on outcome-verified trajectories vs. PACT; Qwen3-8B, three seeds | PACT |
+| Unsupported-action rate | 11.2% | 2.3% | RFT vs. PACT, Qwen3-8B; prompted base model 9.4%, teacher 2.9% | PACT |
+| MT-Bench, general ability after domain training | 8.1 | 7.9 | Prompted Qwen3-8B vs. PACT trained with 15% general instruction data | PACT |
+| Cost per 1,000 claim files | $14.20 | $0.90 | The teacher at list API prices vs. the Qwen3-8B student on one L40S | PACT |
+| Share of teacher accuracy, MedQA, FinQA, LegalBench-R and BFCL-AST | 97.3% | 98.7% | Qwen3-8B, teacher Qwen3-235B-A22B, three seeds; best fixed recipe (OPD→GRPO) vs. GATE (81.8 vs. the teacher's 82.8); KDRL 96.6% | [GATE](https://hanaml.com/research/papers/domain-distillation-rl) |
+| Training compute, 8×H100 node-hours | 58.0 | 50.8 | KDRL (λ = 0.5) vs. GATE, Qwen3-8B, 400 steps; GATE skips teacher prefills on prompts routed to the verifier | GATE |
+| Gap to the teacher explained by coverage ρ₆₄ | n/a | R² = 0.89 | Linear fit of GATE's gap on 1 − ρ₆₄ over 12 size–task cells, 1.7B to 8B; ρ₆₄ ≥ 0.952 leaves at most one point | GATE |
+
+### Reported by the components
+
+`small-lm` and `serve-bench` report these in their READMEs; no paper covers them.
+
+| Metric | Baseline | Result | Note |
 | --- | --- | --- | --- |
-| Extraction F1, insurance claims (held-out) | 0.72 | 0.86 | Qwen3-8B base, prompted vs. SFT+DPO |
 | Routing accuracy (local vs. escalate), internal suite | 71% | 86% | Length heuristic vs. calibrated router |
-| Cost per 1M output tokens | $2.10 | $0.84 | On-demand H100 pricing; same traffic replay |
-| Same task, frontier teacher | 0.89 | 0.86 | Teacher is a frontier API model; student is 8B |
-| MT-Bench (general ability kept) | 8.1 | 7.9 | Small regression after domain training |
-| Cost per 1k documents | $14.20 | $0.90 | Teacher API vs. student on one L40S |
-| Win rate vs. SFT-only (pairwise judge) | 50% | 64% | DPO on 12k preference pairs |
 | Selective accuracy at 80% coverage | 74% | 88% | Qwen3-1.7B Q4_K_M; abstains on the hardest 20% |
 | Decode speed, Pixel 8 (tokens/s) | 9.8 | 17.5 | FP16 vs. 4-bit, same model, sustained |
 | Energy per completed task | 41 J | 19 J | Includes retrieval; measured with a USB power meter |
 | Output tokens/s per GPU, Llama 3.1 70B | 1,050 | 2,480 | BF16 vLLM vs. FP8 + EAGLE-2 + prefix caching; 8xH100 |
 | p95 time to first token, RAG workload | 1.9 s | 0.6 s | Shared system prompt and documents reused from KV cache |
+| Cost per 1M output tokens | $2.10 | $0.84 | On-demand H100 pricing; same traffic replay |
 | Accuracy change, internal task suite | 0.0 pts | -0.4 pts | FP8 weights and activations; within run-to-run noise |
 | AWQ INT4 accuracy change | 0.0 pts | -1.8 pts | Larger drop on numeric extraction tasks |
 
@@ -141,8 +154,8 @@ of GATE's baselines.
 
 | Date | Paper | What this repo implements | PDF | Paper repo |
 | --- | --- | --- | --- | --- |
-| 2025-10-21 | [PACT: Distilling Tool-Using Domain Agents with Provenance-Checked Teacher Corrections](https://hanaml.com/research/papers/distilling-domain-agents) | `distill-kit`: teacher sampling, the field-agreement filter, MinHash dedup, SFT, DPO on the student's own errors, field-level F1 | [PDF](https://hanaml.com/papers/distilling-domain-agents.pdf) | [distilling-domain-agents](https://github.com/hanaml-lab/distilling-domain-agents) |
-| 2026-02-24 | [GATE: Gap-Adaptive Mixing of On-Policy Distillation and Verifiable Rewards for Small Domain Specialists](https://hanaml.com/research/papers/domain-distillation-rl) | `distill_kit.plan`: the coverage rule rho_k >= 0.952 for the student size, and the per-prompt weight lambda(x) and routing | [PDF](https://hanaml.com/papers/domain-distillation-rl.pdf) | [domain-distillation-rl](https://github.com/hanaml-lab/domain-distillation-rl) |
+| 2025-10-21 | [PACT: Distilling Tool-Using Domain Agents with Provenance-Checked Teacher Corrections](https://hanaml.com/research/papers/distilling-domain-agents) | `distill-kit`: teacher sampling, the field-agreement filter, MinHash dedup, SFT, DPO on the student's own errors, field-level F1; the provenance check, repair and gated on-policy corrections are in the paper repo | [PDF](https://hanaml.com/papers/distilling-domain-agents.pdf) | [distilling-domain-agents](https://github.com/hanaml-lab/distilling-domain-agents) |
+| 2026-02-24 | [GATE: Gap-Adaptive Mixing of On-Policy Distillation and Verifiable Rewards for Small Domain Specialists](https://hanaml.com/research/papers/domain-distillation-rl) | `distill_kit.plan`: the coverage rule rho_k >= 0.952 for the student size, and the per-prompt weight lambda(x) and routing; the GATE trainer is in the paper repo | [PDF](https://hanaml.com/papers/domain-distillation-rl.pdf) | [domain-distillation-rl](https://github.com/hanaml-lab/domain-distillation-rl) |
 
 ## Models
 

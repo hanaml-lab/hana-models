@@ -70,16 +70,20 @@ read from `mt_bench.json` in the run folder, written by FastChat's MT-Bench scri
 
 ## Benchmarks
 
-Insurance claims extraction, held-out carriers. Student is Qwen3-8B.
+From the [PACT paper](https://hanaml.com/research/papers/distilling-domain-agents): ClaimsDesk, 1,800 insurance claim
+files from four carriers not seen in training, with Qwen3-8B as the student and three seeds. PACT adds a provenance
+check, repair and gated on-policy corrections to a pipeline like this one; those are in the
+[paper repo](https://github.com/hanaml-lab/distilling-domain-agents), so a distill-kit run alone will not reproduce
+these numbers.
 
-| Metric | Prompted Qwen3-8B | SFT + DPO |
+| Metric | Baseline | PACT |
 | --- | --- | --- |
-| Extraction F1 | 0.72 | 0.86 |
-| MT-Bench (general ability kept) | 8.1 | 7.9 |
-| Cost per 1k documents, one L40S | $14.20 (teacher API) | $0.90 |
+| Field F1 | 0.72, prompted Qwen3-8B | 0.86 |
+| MT-Bench, general ability kept with 15% general data | 8.1, prompted Qwen3-8B | 7.9 |
+| Cost per 1,000 claim files | $14.20, the teacher at list API prices | $0.90, the student on one L40S |
 
-The frontier teacher scores 0.89 on the same task. DPO on 12k pairs wins 64% of pairwise comparisons against
-SFT alone.
+The teacher, Kimi-K2-Instruct, scores 0.89 on the same task, and fine-tuning on the teacher's outcome-verified
+trajectories (RFT) reaches 0.81.
 
 ## Licence
 
